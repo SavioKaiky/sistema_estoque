@@ -4,7 +4,7 @@ from models.insumo import Insumo
 from models.ficha_tecnica import FichaTecnica
 from models.movimentacao_produto import MovimentacaoProduto
 from models.movimentacao_insumo import MovimentacaoInsumo
-
+from utils.custos_fifo import baixar_estoque_fifo
 
 def produzir(produto_id, quantidade):
     produto = Produto.query.get(produto_id)
@@ -27,13 +27,17 @@ def produzir(produto_id, quantidade):
 
         if insumo.estoque_atual < consumo:
             raise Exception(f"Estoque insuficiente: {insumo.nome}")
+        
+    cmv_unitario = cmv_total / quantidade
 
+    cmv_total = 0
     # 2. DAR BAIXA NOS INSUMOS
     for item in ficha:
         insumo = Insumo.query.get(item.insumo_id)
         consumo = item.quantidade * quantidade
 
-        insumo.estoque_atual -= consumo
+        custo = baixar_estoque_fifo(insumo.id, consumo)
+        cmv_total += custo
 
         mov_insumo = MovimentacaoInsumo(
             insumo_id=insumo.id,
@@ -50,7 +54,9 @@ def produzir(produto_id, quantidade):
         produto_id=produto_id,
         tipo="entrada",
         quantidade=quantidade,
-        motivo="produção"
+        motivo="produção",
+        custo_total=cmv_total,
+        custo_unitario=cmv_unitario
     )
     db.session.add(mov_produto)
 
