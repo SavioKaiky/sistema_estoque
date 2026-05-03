@@ -13,4 +13,3 @@ class MovimentacaoProduto(db.Model):
 
     produto = db.relationship("Produto")
 
-    
