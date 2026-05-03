@@ -22,7 +22,7 @@ def create_app():
     def home():
         return render_template("home.html")
 
-    print(app.url_map)
+    # print(app.url_map)
     return app
 
 
