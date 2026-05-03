@@ -81,7 +81,7 @@ def listar_produtos():
     produtos = Produto.query.all()
     return render_template("produtos/listar.html", produtos=produtos)
 
-@produtos_bp.route("/venda", methods=["GET", "POST"])
+@producao_bp.route("/venda", methods=["GET", "POST"])
 def venda():
     produtos = Produto.query.all()
 
