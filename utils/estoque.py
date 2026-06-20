@@ -1,9 +1,10 @@
 from database import db
 from models.insumo import Insumo
 from models.movimentacao_insumo import MovimentacaoInsumo
+from models.lote_insumo import LoteInsumo
 
 
-def movimentar_insumo(insumo_id, tipo, quantidade, motivo):
+def movimentar_insumo(insumo_id, tipo, quantidade, motivo, valor_total):
     insumo = Insumo.query.get(insumo_id)
 
     if not insumo:
@@ -20,6 +21,17 @@ def movimentar_insumo(insumo_id, tipo, quantidade, motivo):
         insumo.estoque_atual -= quantidade
 
     elif tipo == "entrada":
+        insumo.estoque_atual += quantidade
+        custo_unitario = valor_total / quantidade
+        lote = LoteInsumo(
+            insumo_id=insumo_id,
+            quantidade_inicial=quantidade,
+            quantidade_restante=quantidade,
+            custo_unitario=custo_unitario
+        )
+
+        db.session.add(lote)
+
         insumo.estoque_atual += quantidade
 
     else:

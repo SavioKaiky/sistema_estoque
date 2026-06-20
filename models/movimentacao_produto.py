@@ -10,6 +10,8 @@ class MovimentacaoProduto(db.Model):
     quantidade = db.Column(db.Integer)
     motivo = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    custo_total = db.Column(db.Float)
+    custo_unitario = db.Column(db.Float)
 
     produto = db.relationship("Produto")
 
